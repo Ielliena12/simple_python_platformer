@@ -15,10 +15,13 @@ pygame.display.set_caption("Simple Game")
 #define game variables
 tile_size = 50
 game_over = 0
+main_menu = True
 
 #load images
 bg_img = pygame.image.load('assets/img/bg.png')
 restart_img = pygame.image.load('assets/img/btns/restart.png')
+start_img = pygame.image.load('assets/img/btns/start.png')
+exit_img = pygame.image.load('assets/img/btns/exit.png')
 
 pygame.transform.scale(bg_img, (screen_width, screen_height))
 
@@ -306,6 +309,8 @@ swamp_group = pygame.sprite.Group()
 world = World(world_data)
 
 restart_btn = Button(screen_width // 2 - 200, screen_height // 2 - 150, restart_img)
+start_btn = Button(screen_width // 2 - 200, screen_height // 2 - 150, start_img)
+exit_btn = Button(screen_width // 2 - 200, screen_height // 2, exit_img)
 
 run = True
 while run:
@@ -313,22 +318,27 @@ while run:
 
     background_image = screen.blit(bg_img, (0,0))
 
-    game_over = player.update(game_over)
-    blob_group.update()
-    swamp_group.draw(screen)
-    world.draw()
-    # draw_grid()
+    if main_menu:
+        if exit_btn.draw():
+                run = False
+        if start_btn.draw():
+            main_menu = False
+    else:
+        game_over = player.update(game_over)
+        blob_group.update()
+        swamp_group.draw(screen)
+        world.draw()
+        # draw_grid()
+
+        if game_over:
+            action = restart_btn.draw()
+            if action:
+                game_over = 0
+                player.reset(100, screen_height - 150)
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False
-
-    if game_over:
-        action = restart_btn.draw()
-        if action:
-            game_over = 0
-            player.reset(100, screen_height - 150)
-
 
     pygame.display.update()
 
